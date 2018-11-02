@@ -81,11 +81,14 @@ tile(doorClosed).
 
 %% Test
 
-% level boundaries must be wall
-:- X = 0, Y = 0..n-1, not at(X, Y, wall) ; not at(X, Y, player) ; not at(X, Y, exit).
-:- X = n-1, Y = 0..n-1, not at(X, Y, wall) ; not at(X, Y, player) ; not at(X, Y, exit).
-:- X = 0..n-1, Y = 0, not at(X, Y, wall) ; not at(X, Y, player) ; not at(X, Y, exit).
-:- X = 0..n-1, Y = n-1, not at(X, Y, wall) ; not at(X, Y, player) ; not at(X, Y, exit).
+% level boundaries must be wall/player/exit
+
+boundary(wall;player;exit).
+
+1 { at(X, Y, T) : boundary(T) } 1 :- X = 0, Y = 0..n-1.
+1 { at(X, Y, T) : boundary(T) } 1 :- X = n-1, Y = 0..n-1.
+1 { at(X, Y, T) : boundary(T) } 1 :- X = 0..n-1, Y = 0.
+1 { at(X, Y, T) : boundary(T) } 1 :- X = 0..n-1, Y = n-1.
 
 % There must be exactly one instance of player
 :- 0 { at(X, Y, player) } 0.
