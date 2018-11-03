@@ -1,4 +1,6 @@
 % dungeon.lp
+% clingo -n 1 --rand-freq=1 --seed=`echo $RANDOM` dungeon.lp --stats
+% https://www.puzzlescript.net/editor.html?hack=e559af178f5d63b65989cbef2e5fe663
 
 #const n=9.
 
@@ -62,16 +64,17 @@ tile(laserRrot1).
 %tile(goalOffguardULR).
 %tile(goalOffguardUDR).
 %tile(goalOffguardUDL).
-%%ile(goalOff).
+tile(goalOff).
 
-tile(wireOff)
-tile(wireWallOff).
+tile(wireOff).
+%tile(wireWallOff).
 %tile(buttonOff).
 tile(doorClosed).
 %tile(antiDoorOpen).
 %tile(gate0).
 
-transparent(background;player;exit).
+%transparent(background;player;exit;goalOff;wireOff; doorClosed).
+%transparent(L) :- laser(L).
 step(0,-1 ;; 0,1 ;; 1,0 ;; -1,0).
 %path(X, Y, X, Y, 0) :- at(X, Y, T), transparent(T).
 %path(X1, Y1, X2, Y2, L) :-
@@ -96,10 +99,10 @@ boundary(wall;player;exit).
 :- at(0..n-1, n-1, T), not boundary(T).
 
 % There must be exactly one instance of player
-{ at(X, Y, player) :dim(X), dim(Y) } = 1.
+{ at(0..n-1, 0..n-1, player) } = 1.
 
-% There must be exactly one instance of player
-{ at(X, Y, exit) :dim(X), dim(Y) } = 1.
+% There must be exactly one instance of exit
+{ at(0..n-1, 0..n-1, exit) } = 1.
 
 % Player must be on boundary
 :- at(X, Y, player), X > 0, X < n - 1, Y > 0, Y < n - 1.
@@ -107,28 +110,79 @@ boundary(wall;player;exit).
 % Exit must be on boundary
 :- at(X, Y, exit), X > 0, X < n - 1, Y > 0, Y < n - 1.
 
+% Player must not be on corner
+:- at(X, Y, player), X = 0, Y = 0.
+:- at(X, Y, player), X = 0, Y = n-1.
+:- at(X, Y, player), X = 0, Y = 0.
+:- at(X, Y, player), X = n-1, Y = n-1.
+
+% Exit must not be on corner
+:- at(X, Y, exit), X = 0, Y = 0.
+:- at(X, Y, exit), X = 0, Y = n-1.
+:- at(X, Y, exit), X = 0, Y = 0.
+:- at(X, Y, exit), X = n-1, Y = n-1.
+
+% There must be a path from player to exit
+%:- at(PlayerX, PlayerY, player), at(ExitX, ExitY, exit), path(PlayerX, PlayerY, ExitX, ExitY, L).
+
+%% One rotatable laser, one goal, laser is in line with goal but not in same direction
+%% + wires connect goal to single door
+
 % There must be a closed door adjacent to exit (on inside edge)
 :- at(X, 0, exit), not at(X, 1, doorClosed).
 :- at(X, n-1, exit), not at(X, n-2, doorClosed).
 :- at(0, Y, exit), not at(1, Y, doorClosed).
 :- at(n-1, Y, exit), not at(n-2, Y, doorClosed).
 
-% There must be a path from player to exit of length > 1
-%:- at(PlayerX, PlayerY, player), at(ExitX, ExitY, exit), path(PlayerX, PlayerY, ExitX, ExitY, L), L <= 1.
-
 % There must be exactly one laser
 laser(laserUrot1;laserDrot1;laserLrot1;laserRrot1).
-{ at(X, Y, T) :dim(X), dim(Y) } = 1 :- laser(T).
+{ at(0..n-1, 0..n-1, T) :laser(T) } = 1.
 
 % There must be exactly one closed door
-{ at(X, Y, doorClosed) :dim(X), dim(Y) } = 1.
+{ at(0..n-1, 0..n-1, doorClosed) } = 1.
 
 % There must be exactly one sensor
-sensor(goalOff).
-{ at(X, Y, T) :dim(X), dim(Y) } = 1 :- sensor(T).
+{ at(0..n-1, 0..n-1, goalOff) } = 1.
 
 % Wires must connect closed door to sensor
+wirePath(X, Y, X, Y) :-
+    dim(X), dim(Y),
+    at(X, Y, wireOff).
+wirePath(X1, Y1, X2, Y2) :-
+    dim(X1), dim(Y1), dim(X2), dim(Y2),
+    at(X1, Y1, wireOff),
+    step(DX, DY),
+    NX = X1 + DX,
+    NY = Y1 + DY,
+    wirePath(NX, NY, X2, Y2).
+
+doorToSensor(X1, Y1, X2, Y2) :-
+    dim(X1), dim(Y1), dim(X2), dim(Y2),
+    at(X1, Y1, doorClosed),
+    at(X2, Y2, goalOff).
+doorToSensor(X1, Y1, X2, Y2) :-
+    dim(X1), dim(Y1), dim(X2), dim(Y2),
+    at(X1, Y1, doorClosed),
+    step(DX, DY),
+    NX = X1 + DX,
+    NY = Y1 + DY,
+    at(NX, NY, wireOff),
+    wirePath(NX, NY, X3, Y3),
+    step(DX2, DY2),
+    NX2 = NX + DX2,
+    NY2 = NY + DY2,
+    at(NX2, NY2, goalOff).
+
+% Laser must be in line with goal
+:- at(X, Y, T), laser(T), at(0..X-1, 0..Y-1, goalOff).
+:- at(X, Y, T), laser(T), at(0..X-1, Y+1..n-1, goalOff).
+:- at(X, Y, T), laser(T), at(X+1..n-1, 0..Y-1, goalOff).
+:- at(X, Y, T), laser(T), at(X+1..n-1, Y+1..n-1, goalOff).
 
 % Laser must not be pointing at goal initially
+:- at(X, Y, laserDrot1), at(X, 0..Y-1, goalOff).
+:- at(X, Y, laserUrot1), at(X, Y+1..n-1, goalOff).
+:- at(X, Y, laserLrot1), at(X+1..n-1, Y, goalOff).
+:- at(X, Y, laserRrot1), at(0..X-1, 0..Y-1, goalOff).
 
 #show at/3.
