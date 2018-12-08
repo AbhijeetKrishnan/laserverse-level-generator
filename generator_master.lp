@@ -45,74 +45,74 @@ step(0,-1 ;; 0,1 ;; 1,0 ;; -1,0).
 tile(background).
 tile(wall).
 tile(player).
-%tile(crate).
+tile(crate).
 tile(exit).
-%tile(glass).
+tile(glass).
 
-%tile(laserU).
-%tile(laserD).
-%tile(laserL).
-%tile(laserR).
+tile(laserU).
+tile(laserD).
+tile(laserL).
+tile(laserR).
 
-%tile(laserOnU).
-%tile(laserOnD).
-%tile(laserOnL).
-%tile(laserOnR)
+tile(laserOnU).
+tile(laserOnD).
+tile(laserOnL).
+tile(laserOnR)
 
-%tile(laserOffU).
-%tile(laserOffD).
-%tile(laserOffL).
-%tile(laserOffR).
+tile(laserOffU).
+tile(laserOffD).
+tile(laserOffL).
+tile(laserOffR).
 
 tile(laserUrot).
 tile(laserDrot).
 tile(laserLrot).
 tile(laserRrot).
 
-%tile(laserUtran).
-%tile(laserDtran).
-%tile(laserLtran).
-%tile(laserRtran).
+tile(laserUtran).
+tile(laserDtran).
+tile(laserLtran).
+tile(laserRtran).
 
-%tile(laserOffUrot).
-%tile(laserOffDrot).
-%tile(laserOffLrot).
-%tile(laserOffRrot).
+tile(laserOffUrot).
+tile(laserOffDrot).
+tile(laserOffLrot).
+tile(laserOffRrot).
 
-%tile(mirrorUL).
-%tile(mirrorUR).
-%tile(mirrorDR).
-%tile(mirrorDL).
+tile(mirrorUL).
+tile(mirrorUR).
+tile(mirrorDR).
+tile(mirrorDL).
 
-%tile(mirrorULtran).
-%tile(mirrorURtran).
-%tile(mirrorDRtran).
-%tile(mirrorDLtran).
+tile(mirrorULtran).
+tile(mirrorURtran).
+tile(mirrorDRtran).
+tile(mirrorDLtran).
 
 tile(mirrorULrot).
 tile(mirrorURrot).
 tile(mirrorDRrot).
 tile(mirrorDLrot).
 
-%tile(splitter1).
-%tile(splitter2).
-%tile(splitter1tran).
-%tile(splitter2tran).
-%tile(splitter1rot).
-%tile(splitter2rot).
+tile(splitter1).
+tile(splitter2).
+tile(splitter1tran).
+tile(splitter2tran).
+tile(splitter1rot).
+tile(splitter2rot).
 
-%tile(goalOffguardDLR).
-%tile(goalOffguardULR).
-%tile(goalOffguardUDR).
-%tile(goalOffguardUDL).
+tile(goalOffguardDLR).
+tile(goalOffguardULR).
+tile(goalOffguardUDR).
+tile(goalOffguardUDL).
 tile(goalOff).
 
 tile(wireOff).
 tile(wireWallOff).
-%tile(buttonOff).
+tile(buttonOff).
 tile(doorClosed).
-%tile(antiDoorOpen).
-%tile(gate0). %AND gate
+tile(antiDoorOpen).
+tile(gate0). %AND gate
 
 %------------------------------%
 % Action-button-related groups %
@@ -156,10 +156,10 @@ splitter(X) :- splitterRot(X), tile(X).
 splitter(X) :- splitterTran(X), tile(X).
 
 goal(goalOff).
-%goal(goalOffguardDLR;goalOffguardUDL;goalOffguardUDR;goalOffguardULR).
+goal(goalOffguardDLR;goalOffguardUDL;goalOffguardUDR;goalOffguardULR).
 
 door(doorClosed).
-%door(antiDoorOpen).
+door(antiDoorOpen).
 
 %-------------------------%
 % Movement-related groups %
